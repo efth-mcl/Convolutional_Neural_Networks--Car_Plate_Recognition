@@ -67,7 +67,6 @@ def HE(img,T0=70,T1=170,NT0=170,NT1=255,Dark0=5,Dark1=50):
     print(img.size)
     print(Dsum,Ssum)
     if(Dsum<img.size*0.18) or Ssum<img.size*0.34:
-        print("Image does not meet the criteria for HE")
         return img
     hist=hist[T0:T1+1]
     L=np.linspace(T0,T1,T1-T0+1)
