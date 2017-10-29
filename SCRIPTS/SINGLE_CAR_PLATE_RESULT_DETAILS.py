@@ -2,7 +2,7 @@
 # This file is part of the undergraduate thesis of Mr. Efthimis Michalis.
 # The thesis was developed under the supervision of Assistant Prof. Aggelos
 # Pikrakis, in the Department of Informatics, School of ICT, University of
-# Piraeus, Greece. 
+# Piraeus, Greece.
 
 # SINGLE_CAR_PLATER_ESULL_DETAILS.py
 import matplotlib.pyplot as plt
@@ -33,8 +33,8 @@ Net.SetSession()
 
 ip=sys.argv[1]
 
-filename="plates2/plate-"+str(ip)
-img=mpimg.imread('../Files/'+filename)
+filename="PLATES/plate-"+str(ip)
+img=mpimg.imread('../'+filename)
 img=img[cutx:-cutx,cuty:-cuty]
 
 Per=(383*900/img.size)**(1/2)
@@ -52,16 +52,13 @@ plt.imshow(img,cmap='gray')
 plt.axis('off')
 plt.show()
 
-ip=int(ip)
 img=img.astype(int)
-if ip==13:
-    ip=1
-
-HEinput=[[70,170,170,255,5,50],
-        [50,160,170,255,5,50], #plate13
 
 
-# defult default threshold
+HEinput=[70,170,170,255,5,50]
+
+
+# default default threshold
 # T0=55
 # T1=160
 # NT0=160
@@ -77,12 +74,12 @@ HEinput=[[70,170,170,255,5,50],
 #         )
 
 imgH=HE(img,
-            HEinput[ip][0],
-            HEinput[ip][1],
-            HEinput[ip][2],
-            HEinput[ip][3],
-            HEinput[ip][4],
-            HEinput[ip][5]
+            HEinput[0],
+            HEinput[1],
+            HEinput[2],
+            HEinput[3],
+            HEinput[4],
+            HEinput[5]
         )
 
 imgH=imgH/255

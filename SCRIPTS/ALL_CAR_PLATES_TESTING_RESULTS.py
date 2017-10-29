@@ -1,4 +1,4 @@
-# Disclaimer: 
+# Disclaimer:
 # This file is part of the undergraduate thesis of Mr. Efthimis Michalis.
 # The thesis was developed under the supervision of Assistant Prof. Aggelos
 # Pikrakis, in the Department of Informatics, School of ICT, University of
@@ -27,7 +27,7 @@ def HE(img,T0=70,T1=170,NT0=170,NT1=255,Dark0=5,Dark1=50):
     Dsum=np.sum(hist[Dark0:Dark1])
     Ssum=np.sum(hist[T0:T1+1])
     if(Dsum<img.size*0.18) or Ssum<img.size*0.34:
-        print("Image does not meet the criteria for HE")
+
         return img
     hist=hist[T0:T1+1]
     L=np.linspace(T0,T1,T1-T0+1)
@@ -184,12 +184,11 @@ Net.SetSession()
 Net.Initialize_Vars()
 gap=2
 
-HEinput=[[70,170,170,255,5,50],
-        [50,160,170,255,5,50], #plate13
+HEinput=[70,170,170,255,5,50]
 for ip in range(1,19):
     # filename="plates2/plate-"+str(ip)+".jpg" original
-    filename="plates2/plate-"+str(ip)
-    img=mpimg.imread('../Files/'+filename)
+    filename="PLATES/plate-"+str(ip)
+    img=mpimg.imread('../'+filename)
     img=img[cutx:-cutx,cuty:-cuty]
     Per=(383*900/img.size)**(1/2)
     img=spm.imresize(img,(int(img.shape[0]*Per),int(img.shape[1]*Per)),'bicubic')
@@ -200,17 +199,15 @@ for ip in range(1,19):
         img=img[:,:,0]*1/3 + img[:,:,1]*1/3 + img[:,:,2]*1/3
     img=img.astype(int)
     img=img.astype(int)
-    k=0
-    if ip==13:
-        k=1
+
 
     img=HE(img,
-                HEinput[k][0],
-                HEinput[k][1],
-                HEinput[k][2],
-                HEinput[k][3],
-                HEinput[k][4],
-                HEinput[k][5]
+                HEinput[0],
+                HEinput[1],
+                HEinput[2],
+                HEinput[3],
+                HEinput[4],
+                HEinput[5]
             )
     img=img/255
     Totaltime=0
@@ -314,4 +311,5 @@ for ip in range(1,19):
         L+=l[1]
     plt.title(L)
     plt.imshow(IMG)
+plt.subplots_adjust(0,0,1,.95,.5,.41)
 plt.show()
