@@ -21,7 +21,7 @@ from NEURAL_NETWORK_TOOL import *
 cutx=1 #cut image bottom,top pixels
 cuty=1 #cut image left,right pixels
 
-# We use MNIST-CHARS74K_NUM_CAPS_FONTS dataset gray images <28,28,1> and 36 class
+# We use MNIST-CHARS74K_NUM_CAPS_FONTS dataset gray images Dimensions:<28,28,1> and 36 class
 
 Set2=['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I',
         'J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
@@ -34,10 +34,12 @@ Net.SetSession()
 ip=sys.argv[1]
 
 filename="PLATES/plate-"+str(ip)
-img=mpimg.imread('../'+filename)
-img=img[cutx:-cutx,cuty:-cuty]
+or_img=mpimg.imread('../'+filename) #Qriginal Image
+img=or_img[cutx:-cutx,cuty:-cuty]
 
 Per=(383*900/img.size)**(1/2)
+
+
 img=spm.imresize(img,(int(img.shape[0]*Per),int(img.shape[1]*Per)),'bicubic')
 plt.imshow(img)
 plt.axis('off')
@@ -48,6 +50,7 @@ if(len(img.shape)==3):
         img=img
     img=img[:,:,0]*1/3 + img[:,:,1]*1/3 + img[:,:,2]*1/3
 
+plt.title('rgb2gray')
 plt.imshow(img,cmap='gray')
 plt.axis('off')
 plt.show()
@@ -73,7 +76,8 @@ HEinput=[70,170,170,255,5,50]
 #             dark1
 #         )
 
-imgH=HE(img,
+#he_cr: criteria boolean
+imgH,he_cr=HE(img,
             HEinput[0],
             HEinput[1],
             HEinput[2],
@@ -82,27 +86,24 @@ imgH=HE(img,
             HEinput[5]
         )
 
-imgH=imgH/255
-Eimg,thita=Cany_skimage(imgH,3,0.1,0.3)
 
-plt.subplot(2,1,1)
-plt.title('Αρχική Εικόνα')
-plt.axis('off')
-plt.imshow(img,cmap='Greys_r')
-plt.subplot(2,1,2)
-plt.title('Μετα Την Ισοστάθμιση Ιστογράμματος')
-plt.axis('off')
-plt.imshow(imgH,cmap='Greys_r')
-plt.show()
+if he_cr:
+    plt.subplot(2,1,1)
+    plt.title('Original Image')
+    plt.axis('off')
+    plt.imshow(img,cmap='Greys_r')
+    plt.subplot(2,1,2)
+    plt.title('Histogram Equalization')
+    plt.axis('off')
+    plt.imshow(imgH,cmap='Greys_r')
+    plt.show()
+
+imgH=imgH/255
 img=np.array(imgH)
 del imgH
 
-print(img.shape)
-print(img.size)
-#sys.exit()
-
-# Operator
-
+# Edge Operator
+Eimg,thita=Cany_skimage(img,3,0.1,0.3)
 
 plt.subplot(2,1,1)
 plt.axis('off')
@@ -126,11 +127,11 @@ ImPlace[:,:,0]=np.array(img)
 ImPlace[:,:,1]=np.array(img)
 ImPlace[:,:,2]=np.array(img)
 
-RectDB=DBs(Pon)
+RectDB=DBs(Pon) #DBSCAN
 
-RectHC=heightCluster(RectDB)
+RectHC=heightCluster(RectDB) #Height Cluster
 
-Rect=AreaCluster(RectHC,img.shape)
+Rect=AreaCluster(RectHC,img.shape) #Area Cluster
 
 plt.subplot(1,3,1)
 plt.axis('off')
@@ -146,6 +147,7 @@ plt.subplot(1,3,3)
 plt.title('AreaCluster')
 plt.axis('off')
 RectsDrawing(ImPlace, Rect, [1,0,0])
+plt.subplots_adjust(0,0,1,1)
 plt.show()
 del RectDB,RectHC
 
@@ -156,6 +158,7 @@ Imd=1 #image dimensions gray->1 rgb->3
 n_clusters_=Rect.shape[0]
 gap=2 #add black square around the image before scaling
 Net.Initialize_Vars()
+Label=[]
 for I in range(0,n_clusters_):
     #############
     ### CNN
@@ -164,6 +167,7 @@ for I in range(0,n_clusters_):
     pos1x=Rect[I][2]+1
     pos1y=Rect[I][3]+1
 
+    Label.append([pos0y])
     Rect1=Eimg[pos0x:pos1x,pos0y:pos1y]
     thita1=thita[pos0x:pos1x,pos0y:pos1y]
 #  fill edge binary images based on thita
@@ -232,10 +236,23 @@ for I in range(0,n_clusters_):
              Net.keep_prob :np.ones((Net.DroupoutsProbabilitys.shape[0]))
     })
 
-    maxScore=np.max(Score)
-    plt.subplot(int(np.ceil(n_clusters_/5)),min(n_clusters_,5),I+1)
+    Conf=np.max(Score)
+    plate_char=Set2[np.where(Score.reshape(36)==Conf)[0][0]]
+    Label[-1].append(plate_char)
 
-    plt.title("Max Score = "+str(maxScore)+"\nIn class : "+str(Set2[np.where(Score.reshape(36)==maxScore)[0][0]]))
+    plt.subplot(int(np.ceil(n_clusters_/5)),min(n_clusters_,5),I+1)
+    plt.title("Confidence:\n %.2f\nClass: %s" %(Conf,plate_char))
     plt.axis('off')
     plt.imshow(ScalePic,cmap='Greys_r')
+
+plt.subplots_adjust(wspace=1)
+plt.show()
+
+plate_number=''
+for cr in sorted(Label, key=lambda Labeli: Labeli[0]):
+    plate_number+=cr[1]
+
+plt.title(plate_number)
+plt.imshow(or_img)
+plt.axis('off')
 plt.show()

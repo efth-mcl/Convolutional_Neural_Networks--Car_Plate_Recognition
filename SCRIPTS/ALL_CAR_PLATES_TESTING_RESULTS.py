@@ -27,7 +27,6 @@ def HE(img,T0=70,T1=170,NT0=170,NT1=255,Dark0=5,Dark1=50):
     Dsum=np.sum(hist[Dark0:Dark1])
     Ssum=np.sum(hist[T0:T1+1])
     if(Dsum<img.size*0.18) or Ssum<img.size*0.34:
-
         return img
     hist=hist[T0:T1+1]
     L=np.linspace(T0,T1,T1-T0+1)
@@ -184,132 +183,144 @@ Net.SetSession()
 Net.Initialize_Vars()
 gap=2
 
-HEinput=[70,170,170,255,5,50]
-for ip in range(1,19):
-    # filename="plates2/plate-"+str(ip)+".jpg" original
-    filename="PLATES/plate-"+str(ip)
-    img=mpimg.imread('../'+filename)
-    img=img[cutx:-cutx,cuty:-cuty]
-    Per=(383*900/img.size)**(1/2)
-    img=spm.imresize(img,(int(img.shape[0]*Per),int(img.shape[1]*Per)),'bicubic')
-    IMG=np.array(img)
-    if(len(img.shape)==3):
-        if(np.max(img)>1):
-            img=img
-        img=img[:,:,0]*1/3 + img[:,:,1]*1/3 + img[:,:,2]*1/3
-    img=img.astype(int)
-    img=img.astype(int)
+HEinput=[[70,170,170,255,5,50],
+        [50,160,170,255,5,50]] #plate13
 
 
-    img=HE(img,
-                HEinput[0],
-                HEinput[1],
-                HEinput[2],
-                HEinput[3],
-                HEinput[4],
-                HEinput[5]
-            )
-    img=img/255
-    Totaltime=0
-    ti=time.time()
-    Eimg,thita=Cany_skimage(img,3,0.1,0.3)
-    Pon=GetPoints(Eimg)
-    ti=time.time()-ti
-    Totaltime+=ti
+plotCNT=1 #plot counter
+for ID in range(1,19):
+    # filename="plates2/plate-"+str(ID)+".jpg" original
+    filename="../PLATES/plate-"+str(ID)
+    if os.path.isfile(filename):
 
-    #############
-    ImPlace=np.zeros((img.shape[0],img.shape[1],3))
+        img=mpimg.imread(filename)
+        img=img[cutx:-cutx,cuty:-cuty]
+        Per=(383*900/img.size)**(1/2)
+        img=spm.imresize(img,(int(img.shape[0]*Per),int(img.shape[1]*Per)),'bicubic')
+        IMG=np.array(img)
+        if(len(img.shape)==3):
+            if(np.max(img)>1):
+                img=img
+            img=img[:,:,0]*1/3 + img[:,:,1]*1/3 + img[:,:,2]*1/3
+        img=img.astype(int)
+        img=img.astype(int)
+        k=0
+        if ID==13:
+            k=1
 
-    ImPlace[:,:,0]=np.array(img)
-    ImPlace[:,:,1]=np.array(img)
-    ImPlace[:,:,2]=np.array(img)
+        img=HE(img,
+                    HEinput[k][0],
+                    HEinput[k][1],
+                    HEinput[k][2],
+                    HEinput[k][3],
+                    HEinput[k][4],
+                    HEinput[k][5]
+                )
+        img=img/255
+        Totaltime=0
+        ti=time.time()
+        Eimg,thita=Cany_skimage(img,3,0.1,0.3)
+        Pon=GetPoints(Eimg)
+        ti=time.time()-ti
+        Totaltime+=ti
 
-    ti=time.time()
-    Rect=RectangleDbscan(Pon,2,2)
-    Rect=np.array(Rect).reshape(len(Rect),4)
+        #############
+        ImPlace=np.zeros((img.shape[0],img.shape[1],3))
+
+        ImPlace[:,:,0]=np.array(img)
+        ImPlace[:,:,1]=np.array(img)
+        ImPlace[:,:,2]=np.array(img)
+
+        ti=time.time()
+        Rect=RectangleDbscan(Pon,2,2)
+        Rect=np.array(Rect).reshape(len(Rect),4)
 
 
-    Rect=heightCluster(Rect)
+        Rect=heightCluster(Rect)
 
 
-    Rect=AreaCluster(Rect)
-    ti=time.time()-ti
-    Totaltime+=ti
+        Rect=AreaCluster(Rect)
+        ti=time.time()-ti
+        Totaltime+=ti
 
-    n_clusters_=Rect.shape[0]
-    Label=[]
-    for I in range(0,n_clusters_):
-        pos0x=Rect[I][0]-1
-        pos0y=Rect[I][1]-1
-        pos1x=Rect[I][2]+1
-        pos1y=Rect[I][3]+1
-        Label.append([pos0y])
-        Rect1=Eimg[pos0x:pos1x,pos0y:pos1y]
-        Plot_Pic=IMG[pos0x:pos1x,pos0y:pos1y]
-        thita1=thita[pos0x:pos1x,pos0y:pos1y]
+        n_clusters_=Rect.shape[0]
+        Label=[]
+        for I in range(0,n_clusters_):
+            pos0x=Rect[I][0]-1
+            pos0y=Rect[I][1]-1
+            pos1x=Rect[I][2]+1
+            pos1y=Rect[I][3]+1
+            Label.append([pos0y])
+            Rect1=Eimg[pos0x:pos1x,pos0y:pos1y]
+            Plot_Pic=IMG[pos0x:pos1x,pos0y:pos1y]
+            thita1=thita[pos0x:pos1x,pos0y:pos1y]
 
-        for i in range(Rect1.shape[0]):
-            for j in range(Rect1.shape[1]):
-                xstep=0
-                ystep=0
-                if thita1[i,j]!=0:
-                    if thita1[i,j]==1:
-                        xstep+=-1
-                    elif thita1[i,j]==2:
-                        xstep+=-1
-                        ystep+=-1
-                    elif thita1[i,j]==3:
-                        ystep+=-1
-                    elif thita1[i,j]==4:
-                        xstep+=1
-                        ystep+=-1
-                    elif thita1[i,j]==-1:
-                        xstep+=1
-                    elif thita1[i,j]==-2:
-                        xstep+=1
-                        ystep+=1
-                    elif thita1[i,j]==-3:
-                        ystep+=1
-                    elif thita1[i,j]==-4:
-                        xstep+=-1
-                        ystep+=1
-                    ix=i+xstep
-                    jy=j+ystep
-                    if not(ix+xstep>=thita1.shape[0] or ix+xstep<0 or  jy+ystep<0 or jy+ystep>=thita1.shape[1]):
-                        while thita1[ix+xstep,jy+ystep]==0 and thita1[ix,jy+ystep]==0 and thita1[ix+xstep,jy]==0:
-                            Rect1[ix,jy]=1
-                            ix+=xstep
-                            jy+=ystep
-                            if ix+xstep==thita1.shape[0] or ix+xstep<0 or  jy+ystep<0 or jy+ystep==thita1.shape[1]:
-                                break
-        dx=pos1x-pos0x
-        dy=pos1y-pos0y
-        a=abs(dx-dy)/2
-        z1=int(a)
-        z0=int(a)+int(a!=int(a))
-        maxD=dx
-        if(dx>dy):
-            Rect1=np.concatenate((np.zeros((dx,z0)),Rect1,np.zeros((dx,z1))),axis=1)
-        elif(dx<dy):
-            Rect1=np.concatenate((np.zeros((z0,dy)),Rect1,np.zeros((z1,dy))),axis=0)
-            maxD=dy
-        Rect1=np.concatenate((np.zeros((maxD,gap)),Rect1,np.zeros((maxD,gap))),axis=1)
-        Rect1=np.concatenate((np.zeros((gap,maxD+2*gap)),Rect1,np.zeros((gap,maxD+2*gap))),axis=0)
-        ScalePic=ScaleArray(Rect1,scaleIM-2*gap)
-        ScalePic=np.concatenate((np.zeros((scaleIM-2*gap,gap)),ScalePic,np.zeros((scaleIM-2*gap,gap))),axis=1)
-        ScalePic=np.concatenate((np.zeros((gap,scaleIM)),ScalePic,np.zeros((gap,scaleIM))),axis=0)
-        Score  = Net.Layers[-1].eval(feed_dict = {
-                 Net.Layers[0]:ScalePic.reshape(1,scaleIM,scaleIM,Imd),
-                 Net.keep_prob :np.ones((Net.DroupoutsProbabilitys.shape[0]))
-        })
-        maxScore=np.max(Score)
-        Label[-1].append(str(SetNames[np.where(Score.reshape(36)==maxScore)[0][0]]))
-    plt.subplot(7,3,ip)
-    plt.axis('off')
-    L=''
-    for l in sorted(Label, key=lambda Labeli: Labeli[0]):
-        L+=l[1]
-    plt.title(L)
-    plt.imshow(IMG)
-plt.subplots_adjust(0,0,1,.95,.5,.41)
+            for i in range(Rect1.shape[0]):
+                for j in range(Rect1.shape[1]):
+                    xstep=0
+                    ystep=0
+                    if thita1[i,j]!=0:
+                        if thita1[i,j]==1:
+                            xstep+=-1
+                        elif thita1[i,j]==2:
+                            xstep+=-1
+                            ystep+=-1
+                        elif thita1[i,j]==3:
+                            ystep+=-1
+                        elif thita1[i,j]==4:
+                            xstep+=1
+                            ystep+=-1
+                        elif thita1[i,j]==-1:
+                            xstep+=1
+                        elif thita1[i,j]==-2:
+                            xstep+=1
+                            ystep+=1
+                        elif thita1[i,j]==-3:
+                            ystep+=1
+                        elif thita1[i,j]==-4:
+                            xstep+=-1
+                            ystep+=1
+                        ix=i+xstep
+                        jy=j+ystep
+                        if not(ix+xstep>=thita1.shape[0] or ix+xstep<0 or  jy+ystep<0 or jy+ystep>=thita1.shape[1]):
+                            while thita1[ix+xstep,jy+ystep]==0 and thita1[ix,jy+ystep]==0 and thita1[ix+xstep,jy]==0:
+                                Rect1[ix,jy]=1
+                                ix+=xstep
+                                jy+=ystep
+                                if ix+xstep==thita1.shape[0] or ix+xstep<0 or  jy+ystep<0 or jy+ystep==thita1.shape[1]:
+                                    break
+            dx=pos1x-pos0x
+            dy=pos1y-pos0y
+            a=abs(dx-dy)/2
+            z1=int(a)
+            z0=int(a)+int(a!=int(a))
+            maxD=dx
+            if(dx>dy):
+                Rect1=np.concatenate((np.zeros((dx,z0)),Rect1,np.zeros((dx,z1))),axis=1)
+            elif(dx<dy):
+                Rect1=np.concatenate((np.zeros((z0,dy)),Rect1,np.zeros((z1,dy))),axis=0)
+                maxD=dy
+            Rect1=np.concatenate((np.zeros((maxD,gap)),Rect1,np.zeros((maxD,gap))),axis=1)
+            Rect1=np.concatenate((np.zeros((gap,maxD+2*gap)),Rect1,np.zeros((gap,maxD+2*gap))),axis=0)
+            ScalePic=ScaleArray(Rect1,scaleIM-2*gap)
+            ScalePic=np.concatenate((np.zeros((scaleIM-2*gap,gap)),ScalePic,np.zeros((scaleIM-2*gap,gap))),axis=1)
+            ScalePic=np.concatenate((np.zeros((gap,scaleIM)),ScalePic,np.zeros((gap,scaleIM))),axis=0)
+            Score  = Net.Layers[-1].eval(feed_dict = {
+                     Net.Layers[0]:ScalePic.reshape(1,scaleIM,scaleIM,Imd),
+                     Net.keep_prob :np.ones((Net.DroupoutsProbabilitys.shape[0]))
+            })
+            maxScore=np.max(Score)
+            Label[-1].append(str(SetNames[np.where(Score.reshape(36)==maxScore)[0][0]]))
+
+        plt.subplot(7,3,plotCNT)
+        plotCNT+=1
+        plt.axis('off')
+        L=''
+        for l in sorted(Label, key=lambda Labeli: Labeli[0]):
+            L+=l[1]
+        print("plate-%i number: %s" %(ID,L))
+        plt.title(L)
+        plt.imshow(IMG)
+
+plt.subplots_adjust(0,0,1,0.92,0.85,0.35)
 plt.show()
