@@ -2,7 +2,7 @@
 # This file is part of the undergraduate thesis of Mr. Efthimis Michalis.
 # The thesis was developed under the supervision of Assistant Prof. Aggelos
 # Pikrakis, in the Department of Informatics, School of ICT, University of
-# Piraeus, Greece. 
+# Piraeus, Greece.
 
 #METHODS.py
 
@@ -63,11 +63,9 @@ def HE(img,T0=70,T1=170,NT0=170,NT1=255,Dark0=5,Dark1=50):
     plt.show()
     Dsum=np.sum(hist[Dark0:Dark1])
     Ssum=np.sum(hist[T0:T1+1])
-    print('SIZE')
-    print(img.size)
-    print(Dsum,Ssum)
     if(Dsum<img.size*0.18) or Ssum<img.size*0.34:
-        return img
+        print("Image does not meet the criteria for HE")
+        return img,False
     hist=hist[T0:T1+1]
     L=np.linspace(T0,T1,T1-T0+1)
     hist=hist/img.size
@@ -87,16 +85,16 @@ def HE(img,T0=70,T1=170,NT0=170,NT1=255,Dark0=5,Dark1=50):
     plt.plot(L,hist)
     plt.xlabel(r'$OLDpixel_i$',fontsize=16)
     plt.ylabel(r'$NEWpixel_i$',fontsize=16)
-    plt.title('Ενημέρωση Εικονοστοιχείων',fontsize=16)
+    plt.title('Pixels update',fontsize=16)
     plt.show()
     L=np.linspace(0,255,256)
     hist,_=np.histogram(img.ravel(),bins=256,range=(0, 255))
     plt.bar(L,hist)
     plt.xlabel(r'$Pixel_i$',fontsize=16)
     plt.ylabel(r'$population_i$',fontsize=16)
-    plt.title('Ιστόγραμα Μετα την Ισοστάθμιση σε Διάστημα',fontsize=16)
+    plt.title('Histogram after Histogram Equalization',fontsize=16)
     plt.show()
-    return img
+    return img,True
 
 
     # s: sigma input for gaussin filter
@@ -177,7 +175,7 @@ def heightCluster(Rect,Esp=15,Min_samples=4):
     Clusts=np.array([],dtype=np.int).reshape(0,4)
     poni=Rect[0]
     PointsToNext=0
-    plt.plot(Rect[:,0],Rect[:,2],'o',Label='Άλλα')
+    plt.plot(Rect[:,0],Rect[:,2],'o',Label='Other')
     Fx=np.array([Rect[:,[0]].min(),Rect[:,[2]].max()])
     Rect=np.delete(Rect, 0, 0)
     while Rect.shape[0]>0:
@@ -203,7 +201,7 @@ def heightCluster(Rect,Esp=15,Min_samples=4):
 
     plt.xlabel(r'$PosY_{min}$',fontsize=16)
     plt.ylabel(r'$PosY_{max}$',fontsize=16)
-    plt.plot(Clusts[:,0],Clusts[:,2],'or',Label='Πιθανοί Χαρακτήρες')
+    plt.plot(Clusts[:,0],Clusts[:,2],'or',label='Possible characters')
     plt.plot(Fx,Fx,'--')
     plt.title('Density = '+str(Min_samples)+', Radius = '+str(Esp),fontsize=16)
     plt.legend(fontsize=16)
@@ -250,9 +248,7 @@ def RectsDrawing(ImP,Rect,c):
     import matplotlib.pyplot as plt
     import numpy as np
     ImP=np.array(ImP)
-    print(Rect.shape)
     n_clusters_=Rect.shape[0]
-    print(n_clusters_)
     for I in range(0,n_clusters_):
         pos0x=Rect[I][0]
         pos0y=Rect[I][1]
