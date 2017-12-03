@@ -2,37 +2,23 @@
 
 ### Python3 Project
 
+#### Library requirements
+1. matplotlib
+2. numpy
+3. scipy
+4. skimage
+5. sklearn
+6. pandas
+7. tensorflow
+
 |            |       IMAGE PREPROCESSING       |   DETECTION  | RECOGNITION |
 | ---------- | ------------------------------- | ------------ |  ---------- |
 | **INFO**   | Shadow removal, Edge detection | DBSCAN   | Deep CNN    |
 |**LIBRARY** | [scikit-image](https://github.com/scikit-image)| [scikit-learn](https://github.com/scikit-learn) | [Tensorflow](https://github.com/tensorflow)  |
 
 
-<table >
-<tr >
-<th>MAIN LIBRARIES</th>
-</tr>
-<tr>
-<td style="padding:0">
-<table style="margin:0">
-<tr>
-<td>
-[NumPy](https://github.com/numpy)
-</td>
-<td>
-[Matplotlib](https://github.com/matplotlib)
-</td>
-<td>
-[pandas](https://github.com/pandas-dev)
-</td>
-<td>
-[SciPy](https://github.com/scipy)
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
+
+
 
 
 ## Get Started
