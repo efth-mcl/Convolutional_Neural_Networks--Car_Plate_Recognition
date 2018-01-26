@@ -19,27 +19,25 @@ def ScaleArray(Input, ScaleSize, Type='bicubic'):
 def Normalize(Input):
         return 1/(Input.max()-Input.min())*(Input-Input.min())
 
-
+    
 def Thresholding(Input, Tmin=0, Tmax=1, Type='binary'):
     Thres = (np.sign(Input-Tmin)+np.sign(Tmax-Input))/2
     if Type == 'binary':
         return Thres
     elif Type == 'linear':
         return Thres*Input
-# return th
 
-
+    
 def GetPoints(Input, T=0.45):
     Ponts = np.where(Input > T)
     P1 = Ponts[1].reshape(Ponts[1].shape[0], 1)
     P0 = Ponts[0].reshape(Ponts[0].shape[0], 1)
     return np.concatenate((P0, P1), axis=1)
 
+
 # A blur filter
 # k     : karnel_size odd number
 # s     : sigma
-
-
 def GaussFilter(Input, k=5, s=2):
     if(k % 2 == 0):
         print("k must be odd number")
@@ -51,9 +49,9 @@ def GaussFilter(Input, k=5, s=2):
     z = 1/(2*s**2*np.pi)*np.exp(z)
     Mask = z/np.sum(z)
     return Use_Mask(Input, Mask)
+
+
 # START EDGE FILTERS
-
-
 def Use_Mask(Input, Mask):
         A = []
         H = Input.shape[0]
@@ -73,12 +71,12 @@ def Use_Mask(Input, Mask):
             for j in range(0, W):
                 A.append(np.sum(Input[i:i+k, j:j+k]*Mask))
         return np.array(A).reshape(H, W)
+
+    
 # Laplacian of Gaussian ###
 # input : array
 # k     : karnel_size odd number
 # s     : sigma
-
-
 def LoG(Input, k=7, s=1.4):
     if(k % 2 == 0):
         print("k must be odd number")
@@ -201,6 +199,7 @@ def SimpleCannyOperator(img, Ts=0.3, Tw=0.1):
     Thita = []
     for i in range(0, H):
         for j in range(0, W):
+            
             # Robert Edge detection
             g1 = img[i, j]-img[i+1, j+1]
             g2 = img[i, j+1]-img[i+1, j]
