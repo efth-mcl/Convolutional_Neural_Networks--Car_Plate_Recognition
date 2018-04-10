@@ -19,7 +19,7 @@ def ScaleArray(Input, ScaleSize, Type='bicubic'):
 def Normalize(Input):
         return 1/(Input.max()-Input.min())*(Input-Input.min())
 
-    
+
 def Thresholding(Input, Tmin=0, Tmax=1, Type='binary'):
     Thres = (np.sign(Input-Tmin)+np.sign(Tmax-Input))/2
     if Type == 'binary':
@@ -27,7 +27,7 @@ def Thresholding(Input, Tmin=0, Tmax=1, Type='binary'):
     elif Type == 'linear':
         return Thres*Input
 
-    
+
 def GetPoints(Input, T=0.45):
     Ponts = np.where(Input > T)
     P1 = Ponts[1].reshape(Ponts[1].shape[0], 1)
@@ -72,7 +72,7 @@ def Use_Mask(Input, Mask):
                 A.append(np.sum(Input[i:i+k, j:j+k]*Mask))
         return np.array(A).reshape(H, W)
 
-    
+
 # Laplacian of Gaussian ###
 # input : array
 # k     : karnel_size odd number
@@ -199,7 +199,7 @@ def SimpleCannyOperator(img, Ts=0.3, Tw=0.1):
     Thita = []
     for i in range(0, H):
         for j in range(0, W):
-            
+
             # Robert Edge detection
             g1 = img[i, j]-img[i+1, j+1]
             g2 = img[i, j+1]-img[i+1, j]
