@@ -11,7 +11,7 @@
 6. pandas
 7. tensorflow
 
-|            |       IMAGE PREPROCESSING       |   DETECTION  | RECOGNITION |
+|            |       IMAGE PREPROCESSING       |   SEGMENTATION  | RECOGNITION |
 | ---------- | ------------------------------- | ------------ |  ---------- |
 | **INFO**   | Shadow removal, Edge detection | DBSCAN   | Deep CNN    |
 |**LIBRARY** | [scikit-image](https://github.com/scikit-image)| [scikit-learn](https://github.com/scikit-learn) | [Tensorflow](https://github.com/tensorflow)  |
