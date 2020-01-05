@@ -1,7 +1,7 @@
+tensorflow>=1,<2
+scipy==1.1.0
 matplotlib
-numpy
-scipy
+pandas
 scikit-image
 scikit-learn
-pandas
-tensorflow
+numpy
