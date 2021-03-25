@@ -24,7 +24,7 @@
 ## Get Started
 1. Clone git
 ```bush
-$ git clone https://github.com/EfMichalis/Convolutional_Neural_Networks-Car_Plate_Recognition
+$ git clone https://github.com/efthymis-mcl/Convolutional_Neural_Networks--Car_Plate_Recognition
 ```
 2. Move to folder
 ```bush
