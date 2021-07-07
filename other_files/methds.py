@@ -4,11 +4,14 @@
 # Pikrakis, in the Department of Informatics, School of ICT, University of
 # Piraeus, Greece.
 
+
 # METHODS.py
-
-
 # Histogram Equalization
 # [T0,T1] is sapce in histogram to which it will be applied the HE to NT0,NT1
+
+
+
+
 def HE(img, T0=70, T1=170, NT0=170, NT1=255, Dark0=5, Dark1=50):
     import numpy as np
     from skimage import exposure

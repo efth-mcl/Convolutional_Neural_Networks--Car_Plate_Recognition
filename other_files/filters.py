@@ -1,5 +1,5 @@
 # Disclaimer:
-# This file is part of the undergraduate thesis of Mr. Efthimis Michalis.
+# This file is part of the undergraduate thesis of Mr. Efthymis Michalis.
 # The thesis was developed under the supervision of Assistant Prof. Aggelos
 # Pikrakis, in the Department of Informatics, School of ICT, University of
 # Piraeus, Greece.
