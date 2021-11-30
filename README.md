@@ -1,5 +1,6 @@
 # Application of Convolutional Neural Networks, Car Plate Recognition
 
+Main library: [nn-tool](https://github.com/efthymis-mcl/NN-Tool)
 
 |            |       IMAGE PREPROCESSING       |   SEGMENTATION  | RECOGNITION |
 | ---------- | ------------------------------- | ------------ |  ---------- |
